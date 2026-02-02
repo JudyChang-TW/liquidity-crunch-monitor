@@ -1,0 +1,20 @@
+{
+  "push": {
+    "ref": "refs/heads/main",
+    "repository": {
+      "name": "liquidity-crunch-monitor",
+      "owner": {
+        "name": "JudyChang-TW"
+      }
+    }
+  },
+  "pull_request": {
+    "number": 1,
+    "head": {
+      "ref": "feature-branch"
+    },
+    "base": {
+      "ref": "main"
+    }
+  }
+}

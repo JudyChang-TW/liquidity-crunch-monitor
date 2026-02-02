@@ -1,0 +1,82 @@
+[flake8]
+# =============================================================================
+# Flake8 Configuration - PyCon Speaker Grade
+# =============================================================================
+# This configuration reflects professional Python development standards.
+# We ignore "noise" rules that don't improve code quality for applications.
+#
+# Philosophy: Tools should serve you, not the other way around.
+# =============================================================================
+
+# Maximum line length
+# Modern screens are wide enough for 120 characters.
+# Black (our formatter) also uses 88-120 range.
+max-line-length = 120
+
+# Ignore specific rules (comma-separated, no inline comments allowed)
+# E501: line too long (Black handles this)
+# D4xx: Docstring format pedantry (for stdlib, not apps)
+# D1xx: Missing docstrings (we document what matters)
+# D2xx: Docstring whitespace/format (minor style)
+# DAR: darglint parameter/return docs (too strict for apps)
+# W503/W504: line break position (Black style)
+# C901: complexity (we manage this case-by-case)
+ignore = E501,D100,D101,D102,D103,D104,D105,D106,D107,D200,D202,D203,D204,D205,D206,D207,D208,D209,D210,D211,D212,D213,D214,D215,D300,D301,D302,D400,D401,D402,D403,D404,D405,D406,D407,D408,D409,D410,D411,D412,D413,D414,D415,D416,D417,DAR,W503,W504,C901
+
+# Exclude directories
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    env,
+    .eggs,
+    *.egg,
+    build,
+    dist,
+    .pre-commit-cache,
+    docs/conf.py,
+    .mypy_cache,
+    .pytest_cache,
+    .tox,
+    *.egg-info
+
+# Complexity
+# Flag functions that are too complex (cyclomatic complexity)
+max-complexity = 10
+
+# Per-file ignores (if needed)
+per-file-ignores =
+    tests/*:E501,F401
+    __init__.py:F401
+
+# Docstring checking
+# We use pydocstyle rules, but relax the pedantic ones
+docstring-convention = google
+
+# =============================================================================
+# Why These Ignores?
+# =============================================================================
+# E501: Modern editors support 120+ chars. Black handles line length.
+#       79 chars is from 1970s terminals.
+#
+# D400/D401: These are stdlib documentation standards. Application code
+#            doesn't need to follow strict docstring grammar rules.
+#            "Returns the user data" vs "Return the user data" - both fine.
+#
+# W503/W504: PEP 8 changed guidance. Black uses W503 style (break before).
+#            Keeping both would cause conflicts.
+#
+# =============================================================================
+# What We Still Enforce:
+# =============================================================================
+# - Import organization (F401, F811, E402 with noqa)
+# - Unused variables (F841)
+# - Loop variable usage (B007)
+# - Mutable defaults (B006)
+# - Code simplifications (SIM113, SIM105, etc.)
+# - Type safety (via mypy separately)
+#
+# This configuration strikes a balance between catching real issues and
+# avoiding pedantic noise that doesn't improve code quality.
+# =============================================================================

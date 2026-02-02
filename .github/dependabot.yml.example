@@ -1,0 +1,105 @@
+# ============================================================================
+# Dependabot Configuration (TAMED VERSION) 🐕‍🦺
+# ============================================================================
+# This is a reference configuration for when the project is stable.
+# Rename to 'dependabot.yml' to activate.
+#
+# Key Differences from Default:
+# 1. Weekly checks instead of daily (reduce noise)
+# 2. Lower PR limits (3-5 instead of 10)
+# 3. Ignore major version updates (breaking changes)
+# 4. Grouped updates to reduce PR count
+# ============================================================================
+
+version: 2
+
+updates:
+  # ===== Python Dependencies =====
+  - package-ecosystem: "pip"
+    directory: "/"
+
+    # Check once a week on Saturday (low traffic day)
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+      time: "02:00"
+      timezone: "UTC"
+
+    # ⚠️ CRITICAL: Limit PRs to prevent storm
+    open-pull-requests-limit: 3
+
+    # Ignore major version updates (usually breaking)
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+    # Group updates to reduce PR count
+    groups:
+      # Group all patch updates together
+      patch-updates:
+        update-types:
+          - "patch"
+      # Group dev dependencies minor updates
+      dev-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+
+    # Metadata
+    reviewers:
+      - "JudyChang-TW"
+    labels:
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+
+    # Only increase versions, never downgrade
+    versioning-strategy: "increase"
+
+  # ===== GitHub Actions =====
+  - package-ecosystem: "github-actions"
+    directory: "/"
+
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+
+    # Even stricter for Actions (we use SHA pinning anyway)
+    open-pull-requests-limit: 2
+
+    # Ignore major updates for Actions
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+    reviewers:
+      - "JudyChang-TW"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "security"
+    commit-message:
+      prefix: "chore(ci)"
+
+# ============================================================================
+# Usage Instructions:
+# ============================================================================
+# 1. Wait until project has stable dependencies
+# 2. Rename this file: mv dependabot.yml.example dependabot.yml
+# 3. Commit and push
+# 4. Monitor first week to see if PR volume is acceptable
+# 5. Adjust open-pull-requests-limit if needed (1-5 recommended)
+#
+# Why This Works:
+# - Weekly schedule = 52 checks/year instead of 365
+# - Low PR limit = max 5 PRs at any time
+# - Major version ignore = no breaking changes without manual review
+# - Grouped updates = 1 PR for multiple patches instead of 10 PRs
+#
+# Expected Result:
+# - ~2-3 PRs per week instead of 10+ PRs per day
+# - All updates are safe (patch/minor only)
+# - Manual control over breaking changes
+# ============================================================================

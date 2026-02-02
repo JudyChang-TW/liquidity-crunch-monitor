@@ -1,0 +1,184 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run weekly on Mondays at 9am UTC
+    - cron: '0 9 * * 1'
+
+jobs:
+  quality-gate:
+    name: Quality Gate (Coverage & Complexity)
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      # Pinning to v4.1.1 for security compliance (SHA: b4ffde65)
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      with:
+        fetch-depth: 0  # Full history for SonarCloud
+
+    - name: Set up Python 3.12
+      # Pinning to v5.0.0 for security compliance (SHA: 0a5c615)
+      uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c
+      with:
+        python-version: "3.12"
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+        pip install radon pylint
+
+    - name: Run tests with coverage
+      run: |
+        # Test all modules (unit + integration)
+        # Infrastructure modules use mocking in unit tests
+        pytest tests/ \
+          --cov=src/liquidity_monitor \
+          --cov-report=term-missing \
+          --cov-report=xml \
+          --cov-report=html \
+          --cov-fail-under=70 \
+          -v
+
+    - name: Check cyclomatic complexity
+      run: |
+        echo "=== Cyclomatic Complexity Analysis ==="
+        radon cc src/liquidity_monitor -a -s
+
+        echo ""
+        echo "=== Maintainability Index ==="
+        radon mi src/liquidity_monitor -s
+
+    - name: Check code quality with Pylint
+      run: |
+        pylint src/liquidity_monitor \
+          --output-format=colorized \
+          --fail-under=8.0 \
+          --disable=C0114,C0115,C0116 \
+          || true
+
+    - name: Generate coverage badge
+      if: github.ref == 'refs/heads/main'
+      run: |
+        # Extract coverage percentage
+        coverage report --format=total > coverage.txt || echo "0" > coverage.txt
+
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+    - name: Checkout code
+      # Pinning to v4.1.1 for security compliance (SHA: b4ffde65)
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+    - name: Dependency Review
+      # Pinning to v4.0.0 for security compliance (SHA: 5a2ce3f)
+      uses: actions/dependency-review-action@5a2ce3f5b92ee19cbb1541a4984c76d921601d7c
+      with:
+        fail-on-severity: moderate
+
+  documentation:
+    name: Documentation Check
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      # Pinning to v4.1.1 for security compliance (SHA: b4ffde65)
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+    - name: Set up Python 3.12
+      # Pinning to v5.0.0 for security compliance (SHA: 0a5c615)
+      uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c
+      with:
+        python-version: "3.12"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pydocstyle darglint interrogate
+
+    - name: Check docstring style
+      run: |
+        pydocstyle src/liquidity_monitor \
+          --convention=google \
+          --add-ignore=D100,D104 \
+          || true
+
+    - name: Check docstring coverage
+      run: |
+        interrogate src/liquidity_monitor \
+          --verbose \
+          --fail-under=80 \
+          --exclude="__init__.py" \
+          --ignore-init-method \
+          --ignore-init-module
+
+  vulnerability-scan:
+    name: Vulnerability & License Scan
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      # Pinning to v4.1.1 for security compliance (SHA: b4ffde65)
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+    - name: Set up Python 3.12
+      # Pinning to v5.0.0 for security compliance (SHA: 0a5c615)
+      uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c
+      with:
+        python-version: "3.12"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+        pip install pip-audit liccheck
+
+    - name: Run pip-audit (CVE scanning)
+      run: |
+        pip-audit --desc || true
+
+    - name: Check licenses
+      run: |
+        # List all dependencies with licenses
+        pip install pip-licenses
+        pip-licenses --format=markdown > licenses.md
+
+        echo "=== Dependency Licenses ==="
+        pip-licenses --format=plain-vertical --with-urls
+
+  code-review:
+    name: Automated Code Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+    - name: Checkout code
+      # Pinning to v4.1.1 for security compliance (SHA: b4ffde65)
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python 3.12
+      # Pinning to v5.0.0 for security compliance (SHA: 0a5c615)
+      uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c
+      with:
+        python-version: "3.12"
+
+    - name: Install review tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+        pip install flake8 flake8-docstrings flake8-bugbear
+
+    - name: Run flake8
+      run: |
+        flake8 src/liquidity_monitor \
+          --max-line-length=100 \
+          --extend-ignore=E203,W503,D100,D104 \
+          --max-complexity=15 \
+          --statistics \
+          --count

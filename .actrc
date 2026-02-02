@@ -1,0 +1,14 @@
+# act 配置文件
+# 使用 GitHub 官方的 runner image (更接近真實 CI 環境)
+-P ubuntu-latest=catthehacker/ubuntu:runner-latest
+-P ubuntu-22.04=catthehacker/ubuntu:runner-22.04
+-P ubuntu-20.04=catthehacker/ubuntu:runner-20.04
+
+# 啟用 verbose 模式，方便調試
+--verbose
+
+# 重用 Docker container，加快測試速度
+--reuse
+
+# 使用本地的環境變量文件 (如果存在)
+--env-file .env.local

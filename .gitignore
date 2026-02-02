@@ -1,0 +1,131 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+ENV/
+env/
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+.benchmarks/
+.benchmarks/
+
+# Type Checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+*.ipynb
+
+# Logs
+*.log
+data/logs/**
+logs/
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Data & Cache
+data/cache/**
+data/snapshots/**
+*.db
+*.sqlite
+*.sqlite3
+
+# Profiling
+*.prof
+*.lprof
+
+# Documentation
+docs/_build/
+site/
+
+# OS
+Thumbs.db
+.Spotlight-V100
+.Trashes
+
+# Temporary Files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Trading Data (sensitive)
+*.csv
+*.parquet
+backtest_results/
+historical_data/
+
+# Configuration Overrides
+config/settings.local.yaml
+config/secrets.yaml
+
+# Personal/Internal Documentation
+docs/internal_notes/
+SUBMISSION_READY_REPORT.md
+
+# Local Helper Scripts
+run_cicd.sh
+TEST_SECURITY.sh
+verify_setup.py
+RUN_THIS_FIRST.sh
+setup_act.sh
+cleanup_for_submission.sh
+
+# act (local GitHub Actions runner)
+.actrc.local
+.secrets
+**/act-cache/
+.act_artifact/
+
+# Keep directory structure
+!data/.gitkeep
+!data/cache/.gitkeep
+!data/logs/.gitkeep

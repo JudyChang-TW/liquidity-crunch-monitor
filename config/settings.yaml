@@ -1,0 +1,158 @@
+# Liquidity-Crunch-Monitor Configuration
+# Production-ready settings for HFT systems
+
+# Binance Futures WebSocket Configuration
+binance:
+  ws_url: "wss://fstream.binance.com/ws"
+  rest_url: "https://fapi.binance.com"
+
+  # Symbols to monitor (add more as needed)
+  symbols:
+    - BTCUSDT
+    - ETHUSDT
+    - BNBUSDT
+
+  # WebSocket connection settings
+  connection:
+    ping_interval: 30        # Seconds between ping messages (keep-alive)
+    ping_timeout: 10         # Seconds to wait for pong response
+    reconnect_delay: 2       # Initial reconnect delay (exponential backoff)
+    max_reconnect_delay: 60  # Maximum reconnect delay
+    message_queue_size: 10000 # Max buffered messages
+
+# Order Book Configuration
+orderbook:
+  depth_levels: 20           # Number of price levels to track per side (bids/asks)
+  snapshot_interval: 1.0     # Seconds between REST snapshot refreshes (resilience)
+  update_speed: "100ms"      # Binance stream speed: 100ms | 250ms | 500ms
+
+  # Price precision (use Decimal for exact arithmetic)
+  use_decimal: true
+
+  # Memory management
+  max_levels: 1000           # Maximum price levels to store (memory limit)
+  cleanup_interval: 300      # Seconds between memory cleanup
+
+# Liquidity Metrics Configuration
+metrics:
+  # Slippage calculation
+  slippage_sizes:            # Order sizes to simulate (in base currency)
+    - 0.1                    # Small retail order (0.1 BTC)
+    - 1.0                    # Medium order (1 BTC)
+    - 5.0                    # Large order (5 BTC)
+    - 10.0                   # Institutional order (10 BTC)
+
+  # Depth calculation (basis points from mid-price)
+  depth_bps:
+    - 10                     # 0.1% (10 bps)
+    - 50                     # 0.5% (50 bps)
+    - 100                    # 1.0% (100 bps)
+
+  # Imbalance calculation
+  imbalance_levels: 5        # Number of levels to include in imbalance calculation
+
+  # Update frequency
+  calculation_interval: 0.1  # Seconds (10 Hz metric updates)
+
+# Anomaly Detection Configuration
+anomaly:
+  # Z-score thresholds
+  zscore_threshold: 3.0      # Standard deviations for anomaly trigger
+
+  # Rolling statistics window
+  rolling_window: 300        # Seconds (5 minutes of historical data)
+  min_samples: 30            # Minimum samples before detecting anomalies
+
+  # Metrics to monitor
+  monitored_metrics:
+    - spread_bps
+    - depth_10bps
+    - depth_50bps
+    - imbalance
+    - slippage_1btc
+
+  # Alert configuration
+  alerts:
+    enabled: true
+    cooldown: 60             # Seconds between repeated alerts for same metric
+
+# Logging Configuration
+logging:
+  level: "INFO"              # DEBUG | INFO | WARNING | ERROR | CRITICAL
+  format: "json"             # json | text
+
+  # Log destinations
+  console:
+    enabled: true
+    colored: true            # Use colored output (disable for production logs)
+
+  file:
+    enabled: true
+    path: "data/logs/liquidity_monitor.log"
+    rotation: "100 MB"       # Rotate after 100 MB
+    retention: "30 days"     # Keep logs for 30 days
+
+  # Performance logging
+  performance:
+    enabled: true
+    log_slow_operations: true
+    slow_threshold_ms: 100   # Log operations taking >100ms
+
+# Performance Tuning
+performance:
+  use_uvloop: true           # Enable uvloop (2-4x faster event loop)
+
+  # Batch processing
+  batch_updates: true
+  batch_size: 100            # Process updates in batches of 100
+  batch_timeout: 0.01        # Or every 10ms, whichever comes first
+
+  # Memory optimization
+  gc_interval: 60            # Seconds between garbage collection
+
+  # Profiling (disable in production)
+  profiling:
+    enabled: false
+    profile_interval: 300    # Seconds between profiling snapshots
+
+# Data Persistence (Optional)
+persistence:
+  enabled: false
+
+  # Time-series database (InfluxDB)
+  influxdb:
+    url: "http://localhost:8086"
+    token: "${INFLUXDB_TOKEN}"  # Use environment variable
+    org: "trading"
+    bucket: "liquidity_metrics"
+
+  # Snapshot storage
+  snapshots:
+    enabled: true
+    path: "data/cache/snapshots"
+    interval: 60             # Seconds between snapshots
+    compression: "gzip"
+
+# Monitoring & Health Checks
+monitoring:
+  health_check:
+    enabled: true
+    port: 8080               # HTTP health check endpoint
+    path: "/health"
+
+  # Prometheus metrics
+  prometheus:
+    enabled: false
+    port: 9090
+    path: "/metrics"
+
+  # System metrics
+  system_metrics:
+    enabled: true
+    interval: 10             # Seconds between system metric collection
+
+# Development Settings (override in dev environment)
+development:
+  debug: false
+  reload_on_change: false
+  synthetic_data: false      # Use synthetic WebSocket data (for testing)

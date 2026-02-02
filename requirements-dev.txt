@@ -1,0 +1,66 @@
+# Development Dependencies for Liquidity-Crunch-Monitor
+# Install with: pip install -r requirements-dev.txt
+
+# Include production dependencies
+-r requirements.txt
+
+# Testing Framework
+pytest==8.3.4              # Testing framework
+pytest-asyncio==0.25.2     # Async test support
+pytest-cov==6.0.0          # Code coverage reports
+pytest-mock==3.14.0        # Mocking utilities
+pytest-timeout==2.3.1      # Test timeout management
+hypothesis==6.130.0        # Property-based testing
+aioresponses==0.7.8        # Mock aiohttp requests (avoid complex manual mocking)
+
+# Code Quality
+black==24.10.0             # Code formatter (PEP 8)
+isort==5.13.2              # Import sorting
+flake8==7.1.1              # Linting
+pylint==3.3.4              # Advanced linting
+mypy==1.14.0               # Static type checking
+
+# Documentation
+sphinx==8.1.3              # Documentation generator
+sphinx-rtd-theme==3.0.2    # ReadTheDocs theme
+sphinx-autodoc-typehints==2.5.0  # Type hint docs
+
+# Performance Analysis
+py-spy==0.4.0              # Sampling profiler (no overhead)
+scalene==1.5.49            # CPU + GPU + memory profiler
+
+# Pre-commit Hooks
+pre-commit==4.0.1          # Git hook management
+
+# Debugging
+ipython==8.31.0            # Enhanced Python shell
+ipdb==0.13.13              # IPython debugger
+rich==13.9.4               # Beautiful terminal output
+
+# Load Testing
+locust==2.32.6             # Load testing for WebSocket connections
+
+# Security & Code Quality Tools
+bandit==1.7.10             # Security linter
+safety==3.2.11             # Dependency vulnerability scanner
+pip-audit==2.7.3           # CVE scanner for dependencies
+radon==6.0.1               # Code complexity analyzer
+pydocstyle==6.3.0          # Docstring style checker
+interrogate==1.7.0         # Docstring coverage checker
+darglint==1.8.1            # Docstring argument validation
+
+# Additional Testing Tools
+pytest-benchmark==5.1.0    # Performance benchmarks
+pytest-xdist==3.6.1        # Parallel test execution
+faker==33.1.0              # Mock data generation
+
+# Linting Extensions
+flake8-docstrings==1.7.0   # Docstring linting
+flake8-bugbear==24.12.12   # Additional bug detection
+flake8-comprehensions==3.16.0  # Comprehension linting
+flake8-simplify==0.21.0    # Code simplification suggestions
+
+# Type Checking Stubs
+types-PyYAML==6.0.12.20240917
+types-requests==2.32.0.20241016
+types-setuptools==75.7.0.20241230
